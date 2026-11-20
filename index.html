@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Futebol Realista 1v1</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#173b22,#050a07 70%);font-family:Arial,sans-serif;color:#fff;overflow:hidden}
+.screen{width:100vw;height:100vh;display:flex;align-items:center;justify-content:center}.panel{width:min(1050px,96vw);min-height:620px;padding:26px;border:1px solid #4b8a58;border-radius:26px;background:#0b1710eF;box-shadow:0 20px 80px #000;overflow:auto}
+h1{text-align:center;font-size:clamp(38px,7vw,72px);margin:15px 0 5px}.sub{text-align:center;color:#b8cfbe}.row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:22px 0}
+button{border:0;border-radius:15px;padding:15px 23px;font-weight:900;font-size:18px;background:#e8eee9;color:#102015;cursor:pointer;box-shadow:0 4px 0 #829089}
+button:active{transform:translateY(3px);box-shadow:0 1px 0 #829089}.primary{background:#29dc63;color:#05210d}.danger{background:#e94b4b;color:#fff}
+.hidden{display:none!important}.teams{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;max-width:900px;margin:auto}.team{padding:11px 4px;font-size:14px;background:#112418;color:white;border:1px solid #3a6244;box-shadow:none}.team.sel{outline:3px solid #35ec6c;background:#1a4a28}
+#match{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}.top{display:flex;align-items:center;gap:18px;font-weight:900}.badge{padding:8px 13px;border-radius:10px;background:#0009}.score{font-size:28px}
+#field{position:relative;width:min(1100px,96vw);height:min(650px,72vh);min-height:390px;background:linear-gradient(90deg,#16833e 0 50%,#1a9145 50%);border:7px solid #fff;border-radius:15px;overflow:hidden;box-shadow:0 20px 50px #0008}
+.stripe{position:absolute;top:0;width:10%;height:100%;opacity:.08;background:#fff}.s1{left:10%}.s2{left:30%}.s3{left:50%}.s4{left:70%}.s5{left:90%}
+.midline{position:absolute;left:50%;top:0;width:3px;height:100%;background:#fff9}.circle{position:absolute;left:calc(50% - 85px);top:calc(50% - 85px);width:170px;height:170px;border:3px solid #fff9;border-radius:50%}.spot{position:absolute;left:50%;top:50%;width:8px;height:8px;background:#fff;border-radius:50%;transform:translate(-50%,-50%)}
+.box{position:absolute;top:25%;height:50%;width:14%;border:3px solid #fff}.leftbox{left:-3px}.rightbox{right:-3px}.goal{position:absolute;top:38%;height:24%;width:3.5%;border:4px solid #fff;background:repeating-linear-gradient(45deg,#ffffff44 0 3px,transparent 3px 8px)}.leftgoal{left:-3.5%}.rightgoal{right:-3.5%}
+.player{position:absolute;width:44px;height:44px;border-radius:50%;transform:translate(-50%,-50%);z-index:5;border:3px solid #fff;display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 7px 12px #0007}.p1{background:#137cff}.p2{background:#e73535}.gk{width:46px;height:46px;background:#f5a623}.ball{position:absolute;width:30px;height:30px;transform:translate(-50%,-50%);z-index:7;border-radius:50%;background:#fff;box-shadow:0 4px 8px #0008;overflow:hidden}
+.ball:before,.ball:after{content:"";position:absolute;background:#151515}.ball:before{width:12px;height:12px;left:9px;top:9px;clip-path:polygon(50% 0,100% 38%,81% 100%,19% 100%,0 38%)}.ball:after{width:8px;height:8px;left:1px;top:3px;border-radius:50%;box-shadow:20px 2px #151515,4px 20px #151515,22px 20px #151515}
+.aim{position:absolute;height:5px;transform-origin:left center;background:linear-gradient(90deg,#ffe44d,#ff8c00);border-radius:5px;z-index:4;display:none;box-shadow:0 0 10px #ffcf33}.target{position:absolute;z-index:4;font-size:25px;display:none;transform:translate(-50%,-50%)}
+#goalText{position:absolute;z-index:20;inset:0;display:none;align-items:center;justify-content:center;font-size:clamp(50px,10vw,110px);font-weight:1000;text-shadow:0 7px 20px #000;background:#0004}
+.controls{display:flex;align-items:center;justify-content:center;gap:15px;flex-wrap:wrap}.pad{width:150px;height:150px;border-radius:50%;background:#ffffff18;border:2px solid #ffffff55;position:relative;touch-action:none}.stick{position:absolute;width:62px;height:62px;left:44px;top:44px;border-radius:50%;background:#ffffffb8}.kick{min-width:145px}.slide{min-width:145px;background:#f0a62a}.hint{text-align:center;color:#b9cdbf;font-size:13px}
+.stat{display:flex;justify-content:center;gap:15px;flex-wrap:wrap}.stat span{background:#122519;padding:8px 12px;border-radius:10px}
+@media(max-width:650px){.teams{grid-template-columns:repeat(3,1fr)}.panel{padding:15px}.player{width:38px;height:38px}.ball{width:26px;height:26px}.top{gap:7px}.score{font-size:23px}}
+</style>
+</head>
+<body>
+<div class="screen">
+<div class="panel">
+<section id="menu">
+<h1>⚽ FUTEBOL 1V1</h1><p class="sub">Protótipo de futebol com física, drible, roubo e carrinho.</p>
+<div class="row"><button class="primary" onclick="start()">▶ JOGAR</button><button onclick="showTeams()">👕 SELEÇÃO</button></div>
+<div id="teamMenu" class="hidden"><h2 style="text-align:center">Escolha sua seleção</h2><div id="teams" class="teams"></div></div>
+<p class="hint">Este protótipo roda no navegador. O multiplayer online precisa de servidor.</p>
+</section>
+<section id="match" class="hidden">
+<div class="top"><span id="myTeam" class="badge">🇧🇷 Brasil</span><span id="score" class="score">0 × 0</span><span class="badge">🤖 Adversário</span></div>
+<div id="field">
+<div class="stripe s1"></div><div class="stripe s2"></div><div class="stripe s3"></div><div class="stripe s4"></div><div class="stripe s5"></div>
+<div class="midline"></div><div class="circle"></div><div class="spot"></div><div class="box leftbox"></div><div class="box rightbox"></div><div class="goal leftgoal"></div><div class="goal rightgoal"></div>
+<div id="p1" class="player p1">👤</div><div id="p2" class="player p2">🤖</div><div id="gk" class="player gk">🧤</div><div id="ball" class="ball"></div><div id="aim" class="aim"></div><div id="target" class="target">🎯</div><div id="goalText">GOOOOOL! ⚽</div>
+</div>
+<div class="controls"><div class="pad" id="pad"><div id="stick" class="stick"></div></div><button class="primary kick" onclick="kick()">⚽ CHUTAR</button><button class="slide" onclick="slide()">🛝 CARRINHO</button><button class="danger" onclick="backMenu()">SAIR</button></div>
+<div class="stat"><span>💨 Corrida: segure o controle</span><span>🟡 Linha = direção do chute</span><span>🛝 Carrinho = tentativa de roubo</span></div>
+</section>
+</div></div>
+<script>
+const teams=["🇧🇷 Brasil","🇦🇷 Argentina","🇫🇷 França","🇵🇹 Portugal","🏴 Inglaterra","🇪🇸 Espanha","🇩🇪 Alemanha","🇮🇹 Itália","🇳🇱 Holanda","🇯🇵 Japão","🇧🇪 Bélgica","🇺🇾 Uruguai","🇲🇽 México","🇺🇸 EUA","🇨🇴 Colômbia"];
+let selected=teams[0],keys={},move={x:0,y:0},lastDir={x:1,y:0};
+let player={x:30,y:50,vx:0,vy:0},enemy={x:69,y:50,vx:0,vy:0},gk={x:91,y:50},ball={x:50,y:50,vx:0,vy:0,spin:0};
+let score=[0,0],last=performance.now(),slideT=0,stun=0;
+const $=id=>document.getElementById(id);
+teams.forEach((t,i)=>{let b=document.createElement("button");b.className="team"+(i===0?" sel":"");b.textContent=t;b.onclick=()=>{selected=t;document.querySelectorAll(".team").forEach(x=>x.classList.remove("sel"));b.classList.add("sel")};$("teams").appendChild(b)});
+function showTeams(){$("teamMenu").classList.toggle("hidden")}
+function start(){$("menu").classList.add("hidden");$("match").classList.remove("hidden");$("myTeam").textContent=selected;reset()}
+function backMenu(){location.reload()}
+function reset(){player={x:30,y:50,vx:0,vy:0};enemy={x:69,y:50,vx:0,vy:0};gk={x:91,y:50};ball={x:50,y:50,vx:0,vy:0,spin:0};slideT=0;stun=0;render()}
+function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}
+function kick(){let d=dist(player,ball);if(d<9){let dx=lastDir.x,dy=lastDir.y;ball.vx=dx*2.5+player.vx*.25;ball.vy=dy*2.5+player.vy*.25;ball.spin+=8}}
+function slide(){if(slideT>0)return;slideT=.45;let d=dist(player,enemy);if(d<8){enemy.vx+=lastDir.x*1.4;enemy.vy+=lastDir.y*1.4;stun=.35;if(dist(player,ball)<10){ball.vx=lastDir.x*1.2;ball.vy=lastDir.y*1.2}}}
+function goal(side){score[side]++;$("score").textContent=score.join(" × ");$("goalText").style.display="flex";setTimeout(()=>{$("goalText").style.display="none";reset()},900)}
+function physics(dt){
+ if(stun>0)stun-=dt;if(slideT>0)slideT-=dt;
+ let speed=slideT>0?1.8:2.7; if(move.x||move.y){let l=Math.hypot(move.x,move.y)||1;lastDir={x:move.x/l,y:move.y/l};player.vx=move.x/l*speed;player.vy=move.y/l*speed}else{player.vx*=.82;player.vy*=.82}
+ player.x+=player.vx*dt*3;player.y+=player.vy*dt*3;player.x=Math.max(5,Math.min(95,player.x));player.y=Math.max(8,Math.min(92,player.y));
+ // AI adversário
+ let ex=ball.x-enemy.x,ey=ball.y-enemy.y,el=Math.hypot(ex,ey)||1;
+ if(el>5){enemy.vx+=ex/el*dt*3;enemy.vy+=ey/el*dt*3}
+ enemy.vx*=.92;enemy.vy*=.92;enemy.x+=enemy.vx;enemy.y+=enemy.vy;enemy.x=Math.max(7,Math.min(93,enemy.x));enemy.y=Math.max(8,Math.min(92,enemy.y));
+ // roubo automático por proximidade
+ if(dist(player,enemy)<4.8 && Math.abs(player.vx)+Math.abs(player.vy)>1){if(dist(player,ball)<7){ball.vx=lastDir.x*1.0;ball.vy=lastDir.y*1.0}}
+ // bola
+ ball.x+=ball.vx*dt*3;ball.y+=ball.vy*dt*3;ball.vx*=Math.pow(.985,dt*60);ball.vy*=Math.pow(.985,dt*60);ball.spin+=Math.hypot(ball.vx,ball.vy)*dt*4;
+ // colisão player -> bola
+ let dx=ball.x-player.x,dy=ball.y-player.y,d=Math.hypot(dx,dy)||1;
+ if(d<6.5){let push=(6.5-d)*.8;ball.x+=dx/d*push;ball.y+=dy/d*push;ball.vx+=player.vx*.035;ball.vy+=player.vy*.035}
+ // goleiro
+ gk.y=50+Math.sin(performance.now()/650)*20;
+ if(dist(gk,ball)<5){ball.vx=-Math.abs(ball.vx)*.8-0.3;ball.vy+=(ball.y-gk.y)*.08}
+ // paredes e gols
+ if(ball.y<4||ball.y>96){ball.y=Math.max(4,Math.min(96,ball.y));ball.vy*=-.72}
+ if(ball.x<2){if(ball.y>37&&ball.y<63){goal(1)}else{ball.x=2;ball.vx=Math.abs(ball.vx)*.72}}
+ if(ball.x>98){if(ball.y>37&&ball.y<63){goal(0)}else{ball.x=98;ball.vx=-Math.abs(ball.vx)*.72}}
+}
+function render(){
+ [["p1",player],["p2",enemy],["gk",gk],["ball",ball]].forEach(([id,o])=>{let e=$(id);e.style.left=o.x+"%";e.style.top=o.y+"%"});
+ let d=dist(player,ball),a=Math.atan2(lastDir.y,lastDir.x),len=80;
+ if(d<12){$("aim").style.display="block";$("target").style.display="block";$("aim").style.left=ball.x+"%";$("aim").style.top=ball.y+"%";$("aim").style.width=len+"px";$("aim").style.transform="rotate("+a+"rad)";$("target").style.left=(ball.x+Math.cos(a)*8)+"%";$("target").style.top=(ball.y+Math.sin(a)*8)+"%"}else{$("aim").style.display="none";$("target").style.display="none"}
+}
+function loop(now){let dt=Math.min(.035,(now-last)/1000);last=now;if(!$("match").classList.contains("hidden")){physics(dt);render()}requestAnimationFrame(loop)}requestAnimationFrame(loop);
+function setMove(e){e.preventDefault();let r=$("pad").getBoundingClientRect(),p=e.touches?e.touches[0]:e,x=p.clientX-r.left-r.width/2,y=p.clientY-r.top-r.height/2,d=Math.hypot(x,y)||1,max=44;if(d>max){x=x/d*max;y=y/d*max}$("stick").style.left=(r.width/2-31+x)+"px";$("stick").style.top=(r.height/2-31+y)+"px";move={x:x/max,y:y/max}}
+function stop(){move={x:0,y:0};$("stick").style.left="44px";$("stick").style.top="44px"}
+$("pad").addEventListener("touchstart",setMove,{passive:false});$("pad").addEventListener("touchmove",setMove,{passive:false});$("pad").addEventListener("touchend",stop);
+$("pad").addEventListener("mousedown",e=>{setMove(e);let f=x=>setMove(x);window.addEventListener("mousemove",f);window.addEventListener("mouseup",()=>{stop();window.removeEventListener("mousemove",f)},{once:true})});
+window.addEventListener("keydown",e=>{keys[e.key.toLowerCase()]=1;move={x:(keys.d?1:0)-(keys.a?1:0),y:(keys.s?1:0)-(keys.w?1:0)}});
+window.addEventListener("keyup",e=>{keys[e.key.toLowerCase()]=0;move={x:(keys.d?1:0)-(keys.a?1:0),y:(keys.s?1:0)-(keys.w?1:0)}});
+</script>
+</body>
+</html>
